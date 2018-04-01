@@ -1,6 +1,8 @@
-Qt 5.10 introduces many new features and improvements as well as bugfixes
-over the 5.9.x series. For more details, refer to the online documentation
-included in this distribution. The documentation is also available online:
+Qt 5.10.1 is a bug-fix release. It maintains both forward and backward
+compatibility (source and binary) with Qt 5.10.0.
+
+For more details, refer to the online documentation included in this
+distribution. The documentation is also available online:
 
 http://doc.qt.io/qt-5/index.html
 
@@ -15,42 +17,10 @@ https://bugreports.qt.io/
 Each of these identifiers can be entered in the bug tracker to obtain more
 information about a particular change.
 
+This release contains all fixes included in the Qt 5.9.4 release.
+
 ****************************************************************************
-*                               Qt 5.10.0 Changes                          *
+*                            Qt 5.10.1 Changes                             *
 ****************************************************************************
 
-New Features
-------------
-
- -  Added new component (InputModeKey) for input mode switch.
-
-New Keyboard Layouts
---------------------
-
- -  Added Bulgarian keyboard layout.
- -  Added Croatian keyboard layout.
- -  Added Czech keyboard layout.
- -  Added Dutch keyboard layout.
- -  Added Estonian keyboard layout.
- -  Added Greek keyboard layout.
- -  Added Hebrew keyboard layout.
- -  Added Hungarian keyboard layout.
- -  Added Serbian keyboard layout.
-
- Handwriting Recognition
- -----------------------
-
- -  Added Arabic handwriting recognition.
- -  Added Farsi handwriting recognition.
- -  Added support for CJK (Chinese/Japanese/Korean) handwriting
-   via T9 Write.
-
- Important Behavior Changes
---------------------------
-
- -  Ensure the default value of Key.key property is uppercase.
-
-OpenWNN
--------
-
- - Fixed and optimized OpenWNN engine (Japanese keyboard input)
+ - This release contains only minor code improvements.
