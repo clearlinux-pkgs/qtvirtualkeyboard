@@ -4,7 +4,7 @@
 #
 Name     : qtvirtualkeyboard
 Version  : 5.11.1
-Release  : 8
+Release  : 9
 URL      : http://download.qt.io/official_releases/qt/5.11/5.11.1/submodules/qtvirtualkeyboard-everywhere-src-5.11.1.tar.xz
 Source0  : http://download.qt.io/official_releases/qt/5.11/5.11.1/submodules/qtvirtualkeyboard-everywhere-src-5.11.1.tar.xz
 Summary  : No detailed summary available
@@ -13,6 +13,7 @@ License  : Apache-2.0 BSD-3-Clause-Clear GPL-3.0 MIT
 Requires: qtvirtualkeyboard-lib
 Requires: qtvirtualkeyboard-license
 Requires: qtvirtualkeyboard-data
+BuildRequires : buildreq-qmake
 BuildRequires : mesa-dev
 BuildRequires : pkgconfig(Qt5Core)
 BuildRequires : pkgconfig(Qt5Gui)
@@ -20,9 +21,6 @@ BuildRequires : pkgconfig(Qt5Qml)
 BuildRequires : pkgconfig(Qt5Quick)
 BuildRequires : pkgconfig(Qt5Svg)
 BuildRequires : pkgconfig(Qt5Test)
-BuildRequires : qtbase-dev
-BuildRequires : qtbase-extras
-BuildRequires : qtdeclarative-extras
 
 %description
 Qt Virtual Keyboard
@@ -88,7 +86,7 @@ test -r config.log && cat config.log
 make  %{?_smp_mflags}
 
 %install
-export SOURCE_DATE_EPOCH=1531113317
+export SOURCE_DATE_EPOCH=1535163077
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/doc/qtvirtualkeyboard
 cp LICENSE.GPL3 %{buildroot}/usr/share/doc/qtvirtualkeyboard/LICENSE.GPL3
@@ -114,7 +112,8 @@ cp src/virtualkeyboard/3rdparty/tcime/COPYING %{buildroot}/usr/share/doc/qtvirtu
 
 %files doc
 %defattr(0644,root,root,0755)
-%doc /usr/share/doc/qtvirtualkeyboard/*
+%doc /usr/share/doc/qtvirtualkeyboard/src_virtualkeyboard_3rdparty_openwnn_NOTICE
+%doc /usr/share/doc/qtvirtualkeyboard/src_virtualkeyboard_3rdparty_pinyin_NOTICE
 
 %files lib
 %defattr(-,root,root,-)
