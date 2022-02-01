@@ -1,0 +1,142 @@
+Antti Kokko (1):
+      Add changes file for Qt 5.15.2
+
+Jani Heikkinen (1):
+      Bump version
+
+Jarkko Koivikko (3):
+      Avoid reparenting of InputPanel when the window is being destroyed
+      Fix high CPU utilization caused by key repeat timer
+      Fix processing of hard Qt::Key_Backspace and Qt::Key_Delete
+
+Niu Shouwei (1):
+      Suggest phrases based on the last selected word of pinyin
+
+diff --git a/src/plugins/pinyin/plugin/pinyininputmethod.cpp b/src/plugins/pinyin/plugin/pinyininputmethod.cpp
+index cdd7d218..f28f5fa2 100644
+--- a/src/plugins/pinyin/plugin/pinyininputmethod.cpp
++++ b/src/plugins/pinyin/plugin/pinyininputmethod.cpp
+@@ -134,8 +134,8 @@ public:
+         if (composingStr.length() > 0) {
+             if ((candId >= 0 || finishSelection) && composingStr.length() == fixedLen) {
+                 QString resultStr = getComposingStrActivePart();
+-                tryPredict();
+                 q->inputContext()->commit(resultStr);
++                tryPredict();
+             } else if (state == Idle) {
+                 state = Input;
+             }
+diff --git a/src/virtualkeyboard/qvirtualkeyboardinputcontext_p.cpp b/src/virtualkeyboard/qvirtualkeyboardinputcontext_p.cpp
+index a7c0aad9..cacf33f0 100644
+--- a/src/virtualkeyboard/qvirtualkeyboardinputcontext_p.cpp
++++ b/src/virtualkeyboard/qvirtualkeyboardinputcontext_p.cpp
+@@ -278,8 +278,10 @@ void QVirtualKeyboardInputContextPrivate::onInputItemChanged()
+                     For integrated keyboards, make sure it's a sibling to the overlay. The
+                     high z-order will make sure it gets events also during a modal session.
+                 */
+-                if (isDesktopPanel.isValid() && !isDesktopPanel.toBool())
+-                    vkbPanel->setParentItem(quickItem->window()->contentItem());
++                if (isDesktopPanel.isValid() && !isDesktopPanel.toBool()) {
++                    if (QQuickWindow *quickWindow = quickItem->window())
++                        vkbPanel->setParentItem(quickWindow->contentItem());
++                }
+             }
+         }
+     } else {
+@@ -505,6 +507,7 @@ bool QVirtualKeyboardInputContextPrivate::filterEvent(const QEvent *event)
+     QEvent::Type type = event->type();
+     if (type == QEvent::KeyPress || type == QEvent::KeyRelease) {
+         const QKeyEvent *keyEvent = static_cast<const QKeyEvent *>(event);
++        const int key = keyEvent->key();
+ 
+         // Keep track of pressed keys update key event state
+         if (type == QEvent::KeyPress)
+@@ -518,7 +521,6 @@ bool QVirtualKeyboardInputContextPrivate::filterEvent(const QEvent *event)
+             setState(State::KeyEvent);
+ 
+ #ifdef QT_VIRTUALKEYBOARD_ARROW_KEY_NAVIGATION
+-        int key = keyEvent->key();
+         if ((key >= Qt::Key_Left && key <= Qt::Key_Down) || key == Qt::Key_Return) {
+             if (type == QEvent::KeyPress && platformInputContext->isInputPanelVisible()) {
+                 activeNavigationKeys += key;
+@@ -533,8 +535,16 @@ bool QVirtualKeyboardInputContextPrivate::filterEvent(const QEvent *event)
+ #endif
+ 
+         // Break composing text since the virtual keyboard does not support hard keyboard events
+-        if (!preeditText.isEmpty())
+-            commit();
++        if (!preeditText.isEmpty()) {
++            if (type == QEvent::KeyPress && (key == Qt::Key_Delete || key == Qt::Key_Backspace)) {
++                reset();
++                Q_Q(QVirtualKeyboardInputContext);
++                q->clear();
++                return true;
++            } else {
++                commit();
++            }
++        }
+     }
+ #ifdef QT_VIRTUALKEYBOARD_ARROW_KEY_NAVIGATION
+     else if (type == QEvent::ShortcutOverride) {
+diff --git a/src/virtualkeyboard/qvirtualkeyboardinputengine.cpp b/src/virtualkeyboard/qvirtualkeyboardinputengine.cpp
+index e64ea4eb..5f74c2a7 100644
+--- a/src/virtualkeyboard/qvirtualkeyboardinputengine.cpp
++++ b/src/virtualkeyboard/qvirtualkeyboardinputengine.cpp
+@@ -716,9 +716,11 @@ void QVirtualKeyboardInputEngine::timerEvent(QTimerEvent *timerEvent)
+ {
+     Q_D(QVirtualKeyboardInputEngine);
+     if (timerEvent->timerId() == d->repeatTimer) {
+-        d->repeatTimer = 0;
+         d->virtualKeyClick(d->activeKey, d->activeKeyText, d->activeKeyModifiers, true);
+-        d->repeatTimer = startTimer(50);
++        if (!d->repeatCount) {
++            killTimer(d->repeatTimer);
++            d->repeatTimer = startTimer(50);
++        }
+         d->repeatCount++;
+     }
+ }
+diff --git a/tests/auto/inputpanel/data/tst_inputpanel.qml b/tests/auto/inputpanel/data/tst_inputpanel.qml
+index ec1dbd97..f60acc64 100644
+--- a/tests/auto/inputpanel/data/tst_inputpanel.qml
++++ b/tests/auto/inputpanel/data/tst_inputpanel.qml
+@@ -321,6 +321,30 @@ Rectangle {
+             compare(textInput.text, "A")
+         }
+ 
++        function test_hardKeyBackspaceClearsInput_data() {
++            return [
++                { initLocale: "en_GB", initText: "12345", initCursorPosition: 1, inputSequence: "hello", outputText: "12345", expectedCursorPosition: 1 },
++            ]
++        }
++
++        function test_hardKeyBackspaceClearsInput(data) {
++            prepareTest(data)
++
++            if (!inputPanel.wordCandidateListVisibleHint)
++                skip("Prediction/spell correction not enabled")
++
++            compare(Qt.inputMethod.locale.name, Qt.locale(data.initLocale).name)
++            for (var inputIndex in data.inputSequence) {
++                verify(inputPanel.virtualKeyClick(data.inputSequence[inputIndex]))
++            }
++
++            keyClick(Qt.Key_Backspace)
++            waitForRendering(textInput)
++
++            compare(textInput.text, data.outputText)
++            compare(textInput.cursorPosition, data.expectedCursorPosition)
++        }
++
+         function test_hardKeyInput() {
+             prepareTest()
+ 
+@@ -915,6 +939,8 @@ Rectangle {
+                 { initInputMethodHints: Qt.ImhNone, initLocale: "zh_CN", inputSequence: "bailou", expectedCandidates: [ "\u5457", "\u5A04" ], outputText: "\u5457\u5A04" },
+                 // Select phrase from the user dictinary
+                 { initInputMethodHints: Qt.ImhNone, initLocale: "zh_CN", inputSequence: "bailou", expectedCandidates: [ "\u5457\u5A04" ], outputText: "\u5457\u5A04" },
++                // Suggest phrases according to the last selected word
++                { initInputMethodHints: Qt.ImhNone, initLocale: "zh_CN", inputSequence: "da", expectedCandidates: [ "\u5927", "\u5bb6", "\u5ead" ], outputText: "\u5927\u5bb6\u5ead" },
+                 // Add an apostrophe before joined syllables in cases of ambiguity, disable the user dictionary (Qt.ImhSensitiveData) so it does not affect to the results
+                 { initInputMethodHints: Qt.ImhNone | Qt.ImhSensitiveData, initLocale: "zh_CN", inputSequence: "zhangang", expectedCandidates: [ "\u5360", "\u94A2" ], outputText: "\u5360\u94A2" },
+                 { initInputMethodHints: Qt.ImhNone | Qt.ImhSensitiveData, initLocale: "zh_CN", inputSequence: "zhang'ang", expectedCandidates: [ "\u7AE0", "\u6602" ], outputText: "\u7AE0\u6602" },
