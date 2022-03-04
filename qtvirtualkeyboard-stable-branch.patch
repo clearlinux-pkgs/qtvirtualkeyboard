@@ -4,7 +4,8 @@ Antti Kokko (1):
 Jani Heikkinen (1):
       Bump version
 
-Jarkko Koivikko (3):
+Jarkko Koivikko (4):
+      Fix position of the keyboardRectangle in app integration
       Avoid reparenting of InputPanel when the window is being destroyed
       Fix high CPU utilization caused by key repeat timer
       Fix processing of hard Qt::Key_Backspace and Qt::Key_Delete
@@ -12,8 +13,15 @@ Jarkko Koivikko (3):
 Niu Shouwei (1):
       Suggest phrases based on the last selected word of pinyin
 
+Shinichi Okada (1):
+      Pinyin: not mix upper and lower case
+
+Tarja Sundqvist (2):
+      Update commercial license headers
+      Revert "Update commercial license headers"
+
 diff --git a/src/plugins/pinyin/plugin/pinyininputmethod.cpp b/src/plugins/pinyin/plugin/pinyininputmethod.cpp
-index cdd7d218..f28f5fa2 100644
+index cdd7d218..420b13d2 100644
 --- a/src/plugins/pinyin/plugin/pinyininputmethod.cpp
 +++ b/src/plugins/pinyin/plugin/pinyininputmethod.cpp
 @@ -134,8 +134,8 @@ public:
@@ -26,6 +34,61 @@ index cdd7d218..f28f5fa2 100644
              } else if (state == Idle) {
                  state = Input;
              }
+@@ -229,12 +229,12 @@ public:
+             activeCmpsLen = activeCmpsLen - (surface.length() - surfaceDecodedLen);
+             composingStrDisplay = fullSent.mid(0, fixedLen);
+             for (int pos = fixedLen + 1; pos < splStart.size() - 1; pos++) {
+-                composingStrDisplay += surface.mid(splStart[pos], splStart[pos + 1] - splStart[pos]).toUpper();
++                composingStrDisplay += surface.mid(splStart[pos], splStart[pos + 1] - splStart[pos]);
+                 if (splStart[pos + 1] < surfaceDecodedLen)
+                     composingStrDisplay += QLatin1String(" ");
+             }
+             if (surfaceDecodedLen < surface.length())
+-                composingStrDisplay += surface.mid(surfaceDecodedLen).toLower();
++                composingStrDisplay += surface.mid(surfaceDecodedLen);
+         }
+         q->inputContext()->setPreeditText(composingStrDisplay);
+ 
+diff --git a/src/virtualkeyboard/content/InputPanel.qml b/src/virtualkeyboard/content/InputPanel.qml
+index f511eab2..490811bf 100644
+--- a/src/virtualkeyboard/content/InputPanel.qml
++++ b/src/virtualkeyboard/content/InputPanel.qml
+@@ -126,6 +126,7 @@ Item {
+     implicitHeight: keyboard.height
+     Keyboard {
+         id: keyboard
++        readonly property real yOffset: keyboard.wordCandidateView.currentYOffset - (keyboard.shadowInputControl.visible ? keyboard.shadowInputControl.height : 0)
+         anchors.left: parent.left
+         anchors.right: parent.right
+         anchors.bottom: parent.bottom
+@@ -139,12 +140,22 @@ Item {
+     Binding {
+         target: InputContext.priv
+         property: "keyboardRectangle"
+-        value: mapToItem(null,
+-                         desktopPanel ? keyboard.x : x,
+-                         (desktopPanel ? keyboard.y : y) + keyboard.wordCandidateView.currentYOffset - (keyboard.shadowInputControl.visible ? keyboard.shadowInputControl.height : 0),
+-                         keyboard.width,
+-                         keyboard.height - keyboard.wordCandidateView.currentYOffset + (keyboard.shadowInputControl.visible ? keyboard.shadowInputControl.height : 0))
++        value: keyboardRectangle()
+         when: !InputContext.animating
+         restoreMode: Binding.RestoreBinding
+     }
++
++    /*! \internal */
++    function keyboardRectangle() {
++        var rect = Qt.rect(0, keyboard.yOffset, keyboard.width, keyboard.height - keyboard.yOffset)
++        if (desktopPanel) {
++            rect.x += keyboard.x
++            rect.y += keyboard.y
++        }
++        // Read the inputPanel position.
++        // This ensures that the Binding works.
++        var unusedX = inputPanel.x
++        var unusedY = inputPanel.y
++        return mapToItem(null, rect)
++    }
+ }
 diff --git a/src/virtualkeyboard/qvirtualkeyboardinputcontext_p.cpp b/src/virtualkeyboard/qvirtualkeyboardinputcontext_p.cpp
 index a7c0aad9..cacf33f0 100644
 --- a/src/virtualkeyboard/qvirtualkeyboardinputcontext_p.cpp

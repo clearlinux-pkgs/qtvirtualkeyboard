@@ -4,7 +4,7 @@
 #
 Name     : qtvirtualkeyboard
 Version  : 5.15.2
-Release  : 25
+Release  : 26
 URL      : https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtvirtualkeyboard-everywhere-src-5.15.2.tar.xz
 Source0  : https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtvirtualkeyboard-everywhere-src-5.15.2.tar.xz
 Summary  : No detailed summary available
@@ -85,7 +85,7 @@ test -r config.log && cat config.log
 make  %{?_smp_mflags}
 
 %install
-export SOURCE_DATE_EPOCH=1643744384
+export SOURCE_DATE_EPOCH=1646411911
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard
 cp %{_builddir}/qtvirtualkeyboard-everywhere-src-5.15.2/LICENSE.GPL3 %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/8624bcdae55baeef00cd11d5dfcfa60f68710a02
