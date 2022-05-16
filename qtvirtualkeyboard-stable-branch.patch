@@ -1,7 +1,8 @@
 Antti Kokko (1):
       Add changes file for Qt 5.15.2
 
-Jani Heikkinen (1):
+Jani Heikkinen (2):
+      Bump version
       Bump version
 
 Jarkko Koivikko (4):
@@ -16,9 +17,10 @@ Niu Shouwei (1):
 Shinichi Okada (1):
       Pinyin: not mix upper and lower case
 
-Tarja Sundqvist (2):
+Tarja Sundqvist (3):
       Update commercial license headers
       Revert "Update commercial license headers"
+      Merge remote-tracking branch 'origin/tqtc/lts-5.15.4' into tqtc/lts-5.15-opensource
 
 diff --git a/src/plugins/pinyin/plugin/pinyininputmethod.cpp b/src/plugins/pinyin/plugin/pinyininputmethod.cpp
 index cdd7d218..420b13d2 100644
