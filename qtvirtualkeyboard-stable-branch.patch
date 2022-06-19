@@ -17,10 +17,12 @@ Niu Shouwei (1):
 Shinichi Okada (1):
       Pinyin: not mix upper and lower case
 
-Tarja Sundqvist (3):
+Tarja Sundqvist (5):
       Update commercial license headers
       Revert "Update commercial license headers"
+      Bump version
       Merge remote-tracking branch 'origin/tqtc/lts-5.15.4' into tqtc/lts-5.15-opensource
+      Merge remote-tracking branch 'origin/tqtc/lts-5.15.5' into tqtc/lts-5.15-opensource
 
 diff --git a/src/plugins/pinyin/plugin/pinyininputmethod.cpp b/src/plugins/pinyin/plugin/pinyininputmethod.cpp
 index cdd7d218..420b13d2 100644
