@@ -4,7 +4,7 @@
 #
 Name     : qtvirtualkeyboard
 Version  : 5.15.2
-Release  : 28
+Release  : 29
 URL      : https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtvirtualkeyboard-everywhere-src-5.15.2.tar.xz
 Source0  : https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtvirtualkeyboard-everywhere-src-5.15.2.tar.xz
 Summary  : No detailed summary available
@@ -85,15 +85,15 @@ test -r config.log && cat config.log
 make  %{?_smp_mflags}
 
 %install
-export SOURCE_DATE_EPOCH=1655665818
+export SOURCE_DATE_EPOCH=1662658045
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard
-cp %{_builddir}/qtvirtualkeyboard-everywhere-src-5.15.2/LICENSE.GPL3 %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/8624bcdae55baeef00cd11d5dfcfa60f68710a02
-cp %{_builddir}/qtvirtualkeyboard-everywhere-src-5.15.2/src/plugins/lipi-toolkit/3rdparty/lipi-toolkit/MIT_LICENSE.txt %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/b2e28b76775b72633bc107ef13944285b4427bf8
-cp %{_builddir}/qtvirtualkeyboard-everywhere-src-5.15.2/src/plugins/lipi-toolkit/3rdparty/lipi-toolkit/license.txt %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/19cb2d123cdfd3e1e58fd4ebf85cee065bea0cf7
-cp %{_builddir}/qtvirtualkeyboard-everywhere-src-5.15.2/src/plugins/openwnn/3rdparty/openwnn/NOTICE %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/0ad70704f3dc3c6cee594f035b21168238e08b85
-cp %{_builddir}/qtvirtualkeyboard-everywhere-src-5.15.2/src/plugins/pinyin/3rdparty/pinyin/NOTICE %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/e4842b59eeb67867c51032209565509e0fc589b5
-cp %{_builddir}/qtvirtualkeyboard-everywhere-src-5.15.2/src/plugins/tcime/3rdparty/tcime/COPYING %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/c42470b2f854bca72da8965f9549c431a9475e5a
+cp %{_builddir}/qtvirtualkeyboard-everywhere-src-%{version}/LICENSE.GPL3 %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/8624bcdae55baeef00cd11d5dfcfa60f68710a02 || :
+cp %{_builddir}/qtvirtualkeyboard-everywhere-src-%{version}/src/plugins/lipi-toolkit/3rdparty/lipi-toolkit/MIT_LICENSE.txt %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/b2e28b76775b72633bc107ef13944285b4427bf8 || :
+cp %{_builddir}/qtvirtualkeyboard-everywhere-src-%{version}/src/plugins/lipi-toolkit/3rdparty/lipi-toolkit/license.txt %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/19cb2d123cdfd3e1e58fd4ebf85cee065bea0cf7 || :
+cp %{_builddir}/qtvirtualkeyboard-everywhere-src-%{version}/src/plugins/openwnn/3rdparty/openwnn/NOTICE %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/0ad70704f3dc3c6cee594f035b21168238e08b85 || :
+cp %{_builddir}/qtvirtualkeyboard-everywhere-src-%{version}/src/plugins/pinyin/3rdparty/pinyin/NOTICE %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/e4842b59eeb67867c51032209565509e0fc589b5 || :
+cp %{_builddir}/qtvirtualkeyboard-everywhere-src-%{version}/src/plugins/tcime/3rdparty/tcime/COPYING %{buildroot}/usr/share/package-licenses/qtvirtualkeyboard/c42470b2f854bca72da8965f9549c431a9475e5a || :
 %make_install
 
 %files
