@@ -1,2 +1,11 @@
 # This file contains additional pkgconfig build requirements that did
 # not get picked up automatically. One name per line, no whitespace.
+Qt5Charts
+Qt5Core
+Qt5DBus
+Qt5Gui
+Qt5Qml
+Qt5Quick
+Qt5Svg
+Qt5Test
+Qt5Widgets
